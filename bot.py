@@ -1,20 +1,18 @@
-from api import *
 import time
-import requests
-from bs4 import BeautifulSoup
+import api
 
 with open("keys.secret", "r") as f:
     access_token = f.read()
 
 def main():
-    current_comics = get_comics()
+    current_comics = api.get_comics()
     while True:
         time.sleep(5)
-        comics = get_comics()
+        comics = api.get_comics()
         if len(comics) > len(current_comics):
             current_comics = comics
-            latest_comic = scrape_comic(comics[-1]["href"])
-            toot(
+            latest_comic = api.scrape_comic(comics[-1]["href"])
+            api.toot(
                 access_token=access_token,
                 instance_url="https://botsin.space",
                 message=f'{latest_comic["title"]}\n{comics[-1]["href"]}',
