@@ -2,17 +2,18 @@ import time
 import api
 
 with open("keys.secret", "r") as f:
-    access_token = f.read()
+    access_token = f.readline().strip()
 
 def main():
+    print("getting latest comic")
     current_comics = api.get_comics()
     while True:
         time.sleep(5)
+        print("getting latest comics")
         comics = api.get_comics()
         if len(comics) > len(current_comics):
-            current_comics = comics
             latest_comic = api.scrape_comic(comics[-1]["href"])
-            api.toot(
+            status = api.toot(
                 access_token=access_token,
                 instance_url="https://botsin.space",
                 message=f'{latest_comic["title"]}\n{comics[-1]["href"]}',
@@ -21,7 +22,11 @@ def main():
                     latest_comic["ricks_message"]
                 ]]
             )
-            print("updated")
+            if status == 1:
+                current_comics = comics
+                print("updated")
+            else:
+                print("something broke, retrying again in 5 secconds")
         else:
             print("no updates yet")
 

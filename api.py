@@ -33,19 +33,24 @@ def toot(access_token: str, instance_url: str, message: str, images: list = []):
     for example:
     images=[[image_bytes, "a picture of a cat"], [image_bytes, "a picture of a dog"]]
     """
-    image_ids = [
-        upload_img(access_token, instance_url, image, description)["id"] for image, description in images
-    ]
-    requests.post(urljoin(instance_url, "api/v1/statuses/"),
-        data={
-            "status": message,
-            "visibility": "public",
-            "media_ids[]": image_ids
-        },
-        headers={
-            "Authorization": f"Bearer {access_token}"
-        }
-    )
+    try:
+        image_ids = [
+            upload_img(access_token, instance_url, image, description)["id"] for image, description in images
+        ]
+        print(image_ids)
+        requests.post(urljoin(instance_url, "api/v1/statuses/"),
+            data={
+                "status": message,
+                "visibility": "public",
+                "media_ids[]": image_ids
+            },
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            }
+        )
+        return 1
+    except:
+        return 0
 
 
 def get_comics():
